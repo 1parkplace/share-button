@@ -83,7 +83,10 @@ ShareUtils = (function() {
     return el.classList.remove(class_name);
   };
 
-  ShareUtils.prototype.is_encoded = function(str) {
+  ShareUtils.prototype.is_encoded = function (str) {
+    str = str.replace(/[%!'()*]/g, function (c) {
+        return '%' + c.charCodeAt(0).toString(16);
+    });
     return decodeURIComponent(str) !== str;
   };
 
@@ -91,7 +94,9 @@ ShareUtils = (function() {
     if (this.is_encoded(str)) {
       return str;
     } else {
-      return encodeURIComponent(str);
+        return encodeURIComponent(str).replace(/[%!'()*]/g, function(c) {
+            return '%' + c.charCodeAt(0).toString(16);
+        });
     }
   };
 
@@ -435,7 +440,7 @@ Share = (function(_super) {
     if (!this.is_encoded(this.config.networks.twitter.description)) {
       this.config.networks.twitter.description = encodeURIComponent(this.config.networks.twitter.description);
     }
-    if (typeof this.config.networks.facebook.app_id === 'integer') {
+    if (typeof this.config.networks.facebook.app_id === 'number') {
       return this.config.networks.facebook.app_id = this.config.networks.facebook.app_id.toString();
     }
   };
